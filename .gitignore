@@ -1,0 +1,89 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+
+# =========================
+# Entornos virtuales
+# =========================
+venv/
+.env/
+.env.*
+ENV/
+env/
+
+# =========================
+# Django
+# =========================
+*.log
+db.sqlite3
+staticfiles/
+media/
+
+# Migraciones (opcional)
+# Si quieres versionarlas, comenta estas líneas
+**/migrations/
+!**/migrations/__init__.py
+
+# =========================
+# Configuración sensible
+# =========================
+.env
+config/settings_local.py
+
+# =========================
+# IDEs y editores
+# =========================
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# =========================
+# Sistema Operativo
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Archivos temporales
+# =========================
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# =========================
+# Logs y dumps
+# =========================
+*.log
+*.sql
+*.dump
+
+# =========================
+# Node / Frontend (si luego usas React)
+# =========================
+node_modules/
+dist/
+build/
+
+# =========================
+# Coverage / Testing
+# =========================
+.coverage
+htmlcov/
+.pytest_cache/
+
+# =========================
+# Otros
+# =========================
+*.zip
+*.rar
+*.7z
