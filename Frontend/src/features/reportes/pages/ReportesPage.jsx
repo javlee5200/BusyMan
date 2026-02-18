@@ -42,6 +42,7 @@ function ReportesPage() {
   const [estadoData, setEstadoData] = useState([]);
   const [tecnicoData, setTecnicoData] = useState([]);
   const [consumoData, setConsumoData] = useState([]);
+  const [estadoPrevData, setEstadoPrevData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -68,6 +69,11 @@ function ReportesPage() {
     null,
   );
 
+  const previousTotalsByState = estadoPrevData.reduce((acc, item) => {
+    acc[item.estado] = Number(item.total || 0);
+    return acc;
+  }, {});
+
   function formatCurrency(value) {
     const amount = Number(value || 0);
     return new Intl.NumberFormat('es-CO', {
@@ -77,20 +83,90 @@ function ReportesPage() {
     }).format(amount);
   }
 
+  function formatPercent(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) {
+      return '-';
+    }
+
+    return `${Number(value).toFixed(1)}%`;
+  }
+
+  function formatDelta(value) {
+    const amount = Number(value || 0);
+    if (amount > 0) {
+      return `+${amount}`;
+    }
+
+    return `${amount}`;
+  }
+
+  function getDeltaClass(value) {
+    const amount = Number(value || 0);
+    if (amount > 0) {
+      return 'delta-positive';
+    }
+
+    if (amount < 0) {
+      return 'delta-negative';
+    }
+
+    return 'delta-neutral';
+  }
+
+  function parseDate(value) {
+    if (!value) {
+      return null;
+    }
+
+    const date = new Date(`${value}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  function toIsoDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function getPreviousPeriod(activeFilters) {
+    const startDate = parseDate(activeFilters.fecha_inicio);
+    const endDate = parseDate(activeFilters.fecha_fin);
+
+    if (!startDate || !endDate || endDate < startDate) {
+      return null;
+    }
+
+    const msInDay = 24 * 60 * 60 * 1000;
+    const rangeDays = Math.floor((endDate - startDate) / msInDay) + 1;
+
+    const previousEnd = new Date(startDate.getTime() - msInDay);
+    const previousStart = new Date(previousEnd.getTime() - (rangeDays - 1) * msInDay);
+
+    return {
+      fecha_inicio: toIsoDate(previousStart),
+      fecha_fin: toIsoDate(previousEnd),
+    };
+  }
+
   async function loadAllReports(activeFilters = filters) {
     setLoading(true);
     setError('');
 
     try {
-      const [estadoResult, tecnicoResult, consumoResult] = await Promise.all([
+      const previousPeriod = getPreviousPeriod(activeFilters);
+
+      const [estadoResult, tecnicoResult, consumoResult, estadoPrevResult] = await Promise.all([
         getOrdenesPorEstado(activeFilters),
         getOrdenesPorTecnico(activeFilters),
         getConsumoRepuestos(activeFilters),
+        previousPeriod ? getOrdenesPorEstado(previousPeriod) : Promise.resolve([]),
       ]);
 
       setEstadoData(estadoResult);
       setTecnicoData(tecnicoResult);
       setConsumoData(consumoResult);
+      setEstadoPrevData(estadoPrevResult);
     } catch (requestError) {
       setError(extractApiError(requestError));
     } finally {
@@ -129,10 +205,28 @@ function ReportesPage() {
       headers: [
         { key: 'estado', label: 'Estado' },
         { key: 'total', label: 'Total' },
+        { key: 'porcentaje', label: '% del total' },
+        { key: 'variacion_total', label: 'Variación vs ant.' },
+        { key: 'variacion_porcentaje', label: 'Variación %' },
       ],
       rows: estadoData.map((item) => ({
+        prevTotal: previousTotalsByState[item.estado] || 0,
         estado: getLabelByValue(ESTADO_ORDEN_OPTIONS, item.estado, item.estado),
         total: item.total,
+        porcentaje: formatPercent(
+          resumen.totalOrdenes > 0 ? (Number(item.total || 0) / resumen.totalOrdenes) * 100 : 0,
+        ),
+        variacion_total: formatDelta(Number(item.total || 0) - (previousTotalsByState[item.estado] || 0)),
+        variacion_porcentaje:
+          (previousTotalsByState[item.estado] || 0) > 0
+            ? formatPercent(
+                ((Number(item.total || 0) - (previousTotalsByState[item.estado] || 0)) /
+                  (previousTotalsByState[item.estado] || 0)) *
+                  100,
+              )
+            : Number(item.total || 0) > 0
+              ? 'Nuevo'
+              : '0.0%',
       })),
     });
   }
@@ -307,6 +401,11 @@ function ReportesPage() {
         <>
           {activeSection === 'estado' && (
             <div className="card table-wrapper">
+              {!(filters.fecha_inicio && filters.fecha_fin) && (
+                <p className="table-controls-summary" style={{ marginTop: 0 }}>
+                  Para ver comparativos vs período anterior, selecciona fecha inicio y fecha fin.
+                </p>
+              )}
               <div className="row-actions" style={{ marginBottom: '0.5rem' }}>
                 <button
                   type="button"
@@ -322,20 +421,45 @@ function ReportesPage() {
                   <tr>
                     <th>Estado</th>
                     <th>Total</th>
+                    <th>% del total</th>
+                    <th>Variación vs ant.</th>
+                    <th>Variación %</th>
                   </tr>
                 </thead>
                 <tbody>
                   {estadoData.length === 0 ? (
                     <tr>
-                      <td colSpan="2">Sin datos para el rango seleccionado.</td>
+                      <td colSpan="5">Sin datos para el rango seleccionado.</td>
                     </tr>
                   ) : (
-                    estadoData.map((item) => (
-                      <tr key={item.estado}>
-                        <td>{getLabelByValue(ESTADO_ORDEN_OPTIONS, item.estado, item.estado)}</td>
-                        <td>{item.total}</td>
-                      </tr>
-                    ))
+                    estadoData.map((item) => {
+                      const totalActual = Number(item.total || 0);
+                      const totalAnterior = previousTotalsByState[item.estado] || 0;
+                      const delta = totalActual - totalAnterior;
+
+                      let deltaPercent = '0.0%';
+                      if (totalAnterior > 0) {
+                        deltaPercent = formatPercent((delta / totalAnterior) * 100);
+                      } else if (totalActual > 0) {
+                        deltaPercent = 'Nuevo';
+                      }
+
+                      return (
+                        <tr key={item.estado}>
+                          <td>{getLabelByValue(ESTADO_ORDEN_OPTIONS, item.estado, item.estado)}</td>
+                          <td>{totalActual}</td>
+                          <td>
+                            {formatPercent(
+                              resumen.totalOrdenes > 0
+                                ? (Number(item.total || 0) / resumen.totalOrdenes) * 100
+                                : 0,
+                            )}
+                          </td>
+                          <td className={getDeltaClass(delta)}>{formatDelta(delta)}</td>
+                          <td className={getDeltaClass(delta)}>{deltaPercent}</td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>

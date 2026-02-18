@@ -305,6 +305,21 @@ td button {
   gap: 0.45rem;
 }
 
+.delta-positive {
+  color: #166534;
+  font-weight: 600;
+}
+
+.delta-negative {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.delta-neutral {
+  color: #374151;
+  font-weight: 600;
+}
+
 .notification-center {
   position: fixed;
   top: 1rem;
