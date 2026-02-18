@@ -55,6 +55,14 @@ function getEquipoLabel(equipo) {
   return `${equipo.id} - ${equipo.marca} ${equipo.modelo || ''} (${equipo.numero_serie || 'sin serie'})`;
 }
 
+function normalizeEquipoText(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
 function OrdenesPage() {
   const { user } = useAuth();
   const { pendingActionKeys, requestDeferredAction } = useDeferredAction();
@@ -73,6 +81,34 @@ function OrdenesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [equipoSearch, setEquipoSearch] = useState('');
+  const [equipoDropdownOpen, setEquipoDropdownOpen] = useState(false);
+  const [filterEquipoSearch, setFilterEquipoSearch] = useState('');
+  const [filterEquipoDropdownOpen, setFilterEquipoDropdownOpen] = useState(false);
+
+  const filteredEquiposForForm = useMemo(() => {
+    const query = normalizeEquipoText(equipoSearch);
+    if (!query) return equipos;
+
+    return equipos.filter((equipo) => {
+      const target = normalizeEquipoText(
+        `${equipo.id} ${equipo.marca || ''} ${equipo.modelo || ''} ${equipo.numero_serie || ''}`,
+      );
+      return target.includes(query);
+    });
+  }, [equipos, equipoSearch]);
+
+  const filteredEquiposForFilters = useMemo(() => {
+    const query = normalizeEquipoText(filterEquipoSearch);
+    if (!query) return equipos;
+
+    return equipos.filter((equipo) => {
+      const target = normalizeEquipoText(
+        `${equipo.id} ${equipo.marca || ''} ${equipo.modelo || ''} ${equipo.numero_serie || ''}`,
+      );
+      return target.includes(query);
+    });
+  }, [equipos, filterEquipoSearch]);
 
   const role = user?.role || '';
   const canCreate = useMemo(
@@ -231,13 +267,35 @@ function OrdenesPage() {
     setFilters((previous) => ({ ...previous, [name]: value }));
   }
 
+  function handleFilterEquipoSearchChange(value) {
+    setFilterEquipoSearch(value);
+    setFilterEquipoDropdownOpen(true);
+    setFilters((previous) => ({ ...previous, equipo_id: '' }));
+  }
+
+  function selectFilterEquipo(equipo) {
+    setFilters((previous) => ({
+      ...previous,
+      equipo_id: String(equipo.id),
+    }));
+    setFilterEquipoSearch(getEquipoLabel(equipo));
+    setFilterEquipoDropdownOpen(false);
+  }
+
   function resetForm() {
     setForm(initialForm);
     setEditingId(null);
+    setEquipoSearch('');
+    setEquipoDropdownOpen(false);
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (!form.equipo) {
+      setError('Selecciona un equipo válido.');
+      return;
+    }
+
     setSubmitting(true);
     setError('');
     setMessage('');
@@ -267,6 +325,8 @@ function OrdenesPage() {
   }
 
   function handleEdit(orden) {
+    const selectedEquipo = equipos.find((item) => item.id === orden.equipo);
+
     setForm({
       equipo: String(orden.equipo || ''),
       tecnico_asignado: orden.tecnico_asignado ? String(orden.tecnico_asignado) : '',
@@ -277,9 +337,26 @@ function OrdenesPage() {
       costo_final: orden.costo_final || '0.00',
       estado: orden.estado || 'INGRESADO',
     });
+    setEquipoSearch(selectedEquipo ? getEquipoLabel(selectedEquipo) : '');
+    setEquipoDropdownOpen(false);
     setEditingId(orden.id);
     setError('');
     setMessage('');
+  }
+
+  function handleEquipoSearchChange(value) {
+    setEquipoSearch(value);
+    setEquipoDropdownOpen(true);
+    setForm((previous) => ({ ...previous, equipo: '' }));
+  }
+
+  function selectEquipo(equipo) {
+    setForm((previous) => ({
+      ...previous,
+      equipo: String(equipo.id),
+    }));
+    setEquipoSearch(getEquipoLabel(equipo));
+    setEquipoDropdownOpen(false);
   }
 
   async function handleDelete(orden) {
@@ -306,6 +383,8 @@ function OrdenesPage() {
 
   async function clearFilters() {
     setFilters(initialFilters);
+    setFilterEquipoSearch('');
+    setFilterEquipoDropdownOpen(false);
     await loadOrdenes(initialFilters);
   }
 
@@ -344,14 +423,51 @@ function OrdenesPage() {
 
         <label>
           Equipo
-          <select name="equipo_id" value={filters.equipo_id} onChange={handleFilterChange}>
-            <option value="">Todos</option>
-            {equipos.map((equipo) => (
-              <option key={equipo.id} value={equipo.id}>
-                {getEquipoLabel(equipo)}
-              </option>
-            ))}
-          </select>
+          <div className="combo-field">
+            <input
+              type="text"
+              placeholder="Buscar equipo para filtrar"
+              value={filterEquipoSearch}
+              onChange={(event) => handleFilterEquipoSearchChange(event.target.value)}
+              onFocus={() => setFilterEquipoDropdownOpen(true)}
+              onBlur={() => {
+                setTimeout(() => {
+                  setFilterEquipoDropdownOpen(false);
+                }, 120);
+              }}
+            />
+            {filterEquipoDropdownOpen && (
+              <div className="combo-dropdown" role="listbox" aria-label="Equipos para filtrar">
+                <button
+                  type="button"
+                  className="combo-option"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => {
+                    setFilters((previous) => ({ ...previous, equipo_id: '' }));
+                    setFilterEquipoSearch('');
+                    setFilterEquipoDropdownOpen(false);
+                  }}
+                >
+                  Todos
+                </button>
+                {filteredEquiposForFilters.length === 0 ? (
+                  <div className="combo-empty">Sin coincidencias</div>
+                ) : (
+                  filteredEquiposForFilters.map((equipo) => (
+                    <button
+                      key={equipo.id}
+                      type="button"
+                      className="combo-option"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => selectFilterEquipo(equipo)}
+                    >
+                      {getEquipoLabel(equipo)}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
         </label>
 
         <div className="row-actions">
@@ -369,14 +485,39 @@ function OrdenesPage() {
           <div className="form-row-2">
             <label>
               Equipo
-              <select name="equipo" value={form.equipo} onChange={handleFormChange} required>
-                <option value="">Selecciona un equipo</option>
-                {equipos.map((equipo) => (
-                  <option key={equipo.id} value={equipo.id}>
-                    {getEquipoLabel(equipo)}
-                  </option>
-                ))}
-              </select>
+              <div className="combo-field">
+                <input
+                  type="text"
+                  placeholder="Buscar y seleccionar equipo"
+                  value={equipoSearch}
+                  onChange={(event) => handleEquipoSearchChange(event.target.value)}
+                  onFocus={() => setEquipoDropdownOpen(true)}
+                  onBlur={() => {
+                    setTimeout(() => {
+                      setEquipoDropdownOpen(false);
+                    }, 120);
+                  }}
+                />
+                {equipoDropdownOpen && (
+                  <div className="combo-dropdown" role="listbox" aria-label="Equipos disponibles">
+                    {filteredEquiposForForm.length === 0 ? (
+                      <div className="combo-empty">Sin coincidencias</div>
+                    ) : (
+                      filteredEquiposForForm.map((equipo) => (
+                        <button
+                          key={equipo.id}
+                          type="button"
+                          className="combo-option"
+                          onMouseDown={(event) => event.preventDefault()}
+                          onClick={() => selectEquipo(equipo)}
+                        >
+                          {getEquipoLabel(equipo)}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
             </label>
 
             <label>

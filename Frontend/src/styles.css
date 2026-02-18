@@ -155,6 +155,47 @@ body {
   gap: 0.35rem;
 }
 
+.combo-field {
+  position: relative;
+}
+
+.combo-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  z-index: 15;
+}
+
+.combo-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 0.55rem 0.65rem;
+  cursor: pointer;
+}
+
+.combo-option:last-child {
+  border-bottom: 0;
+}
+
+.combo-option:hover {
+  background: #f9fafb;
+}
+
+.combo-empty {
+  padding: 0.55rem 0.65rem;
+  color: #6b7280;
+}
+
 .checkbox-inline {
   display: flex;
   align-items: center;
