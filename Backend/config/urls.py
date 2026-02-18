@@ -34,6 +34,9 @@ urlpatterns = [
     path("api/auth/token/refresh/", BusyManTokenRefreshView.as_view(), name="token_refresh"),
     path("api/", include("clientes.urls")),
     path("api/", include("equipos.urls")),
+    path("api/", include("inventario.urls")),
+    path("api/", include("ordenes.urls")),
+    path("api/", include("reportes.urls")),
 ]
 
 

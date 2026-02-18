@@ -144,6 +144,9 @@ SPECTACULAR_SETTINGS = {
         {"name": "Auth", "description": "Autenticación y renovación de tokens JWT."},
         {"name": "Clientes", "description": "Gestión CRUD de clientes."},
         {"name": "Equipos", "description": "Gestión CRUD de equipos y filtros."},
+        {"name": "Inventario", "description": "Repuestos, movimientos y consumos por orden."},
+        {"name": "Órdenes", "description": "Gestión de órdenes de trabajo y trazabilidad."},
+        {"name": "Reportes", "description": "Reportes agregados operativos y de consumo."},
     ],
 }
 

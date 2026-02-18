@@ -206,6 +206,67 @@ Reglas de acceso por rol:
 
 > Nota: la API requiere usuario autenticado.
 
+### API Órdenes (Día 9)
+
+Endpoint base:
+
+```bash
+/api/ordenes/
+```
+
+Filtros disponibles (query params):
+- `estado`
+- `tecnico_id`
+- `equipo_id`
+
+Reglas de acceso por rol:
+- `Administrador`: CRUD completo.
+- `Recepción`: `list/retrieve/create/update/partial_update`.
+- `Técnico`: `list/retrieve/update/partial_update`.
+
+Incluye trazabilidad automática de cambios de estado en historial por cada orden.
+
+> Nota: la API requiere usuario autenticado.
+
+### API Inventario (Día 10)
+
+Endpoints base:
+
+```bash
+/api/repuestos/
+/api/inventario/movimientos/
+/api/inventario/consumos/
+```
+
+Reglas de acceso por rol:
+- `Administrador`: CRUD completo.
+- `Recepción`: `list/retrieve/create/update/partial_update`.
+- `Técnico`: solo `list/retrieve`.
+
+Integración con órdenes:
+- Al crear un consumo en `/api/inventario/consumos/`, el sistema descuenta stock automáticamente.
+- Se genera un movimiento tipo `SALIDA` ligado a la orden.
+- Si no hay stock suficiente, retorna error `400`.
+
+### API Reportes (Día 11)
+
+Endpoints:
+
+```bash
+/api/reportes/ordenes-por-estado/
+/api/reportes/ordenes-por-tecnico/
+/api/reportes/consumo-repuestos/
+```
+
+Filtros opcionales por fecha en todos los reportes:
+- `fecha_inicio=YYYY-MM-DD`
+- `fecha_fin=YYYY-MM-DD`
+
+Reglas de acceso por rol:
+- `Administrador`: consulta permitida.
+- `Recepción`: consulta permitida.
+- `Técnico`: consulta permitida.
+
 ### Autenticación JWT (Día 5)
 
 Obtener tokens:
@@ -245,10 +306,10 @@ Authorization: Bearer <access_token>
 
 ### Pruebas automáticas API (Día 6)
 
-Ejecutar pruebas de `clientes` y `equipos`:
+Ejecutar pruebas de `clientes`, `equipos`, `ordenes`, `inventario` y `reportes`:
 
 ```bash
-python manage.py test clientes equipos --settings=config.settings_test
+python manage.py test clientes equipos ordenes inventario reportes --settings=config.settings_test
 ```
 
 > Se usa `config.settings_test` (SQLite) para evitar dependencias de permisos de creación de base de datos de prueba en MySQL.

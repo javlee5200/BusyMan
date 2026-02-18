@@ -480,6 +480,785 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/inventario/consumos/:
+    get:
+      operationId: inventario_consumos_list
+      summary: Listar consumos por órdenes
+      parameters:
+      - in: query
+        name: orden_id
+        schema:
+          type: integer
+        description: Filtrar por orden
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: repuesto_id
+        schema:
+          type: integer
+        description: Filtrar por repuesto
+      tags:
+      - Inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConsumoOrden'
+          description: ''
+    post:
+      operationId: inventario_consumos_create
+      summary: Registrar consumo en orden
+      tags:
+      - Inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumoOrden'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConsumoOrden'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConsumoOrden'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumoOrden'
+          description: ''
+  /api/inventario/consumos/{id}/:
+    get:
+      operationId: inventario_consumos_retrieve
+      summary: Obtener consumo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this consumo orden.
+        required: true
+      tags:
+      - Inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumoOrden'
+          description: ''
+    put:
+      operationId: inventario_consumos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this consumo orden.
+        required: true
+      tags:
+      - inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsumoOrden'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConsumoOrden'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConsumoOrden'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumoOrden'
+          description: ''
+    patch:
+      operationId: inventario_consumos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this consumo orden.
+        required: true
+      tags:
+      - inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConsumoOrden'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedConsumoOrden'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedConsumoOrden'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumoOrden'
+          description: ''
+    delete:
+      operationId: inventario_consumos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this consumo orden.
+        required: true
+      tags:
+      - inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/inventario/movimientos/:
+    get:
+      operationId: inventario_movimientos_list
+      summary: Listar movimientos de inventario
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: repuesto_id
+        schema:
+          type: integer
+        description: Filtrar por repuesto
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: tipo
+        schema:
+          type: string
+        description: Filtrar por tipo de movimiento
+      tags:
+      - Inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovimientoInventario'
+          description: ''
+    post:
+      operationId: inventario_movimientos_create
+      summary: Registrar movimiento manual
+      tags:
+      - Inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovimientoInventario'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MovimientoInventario'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MovimientoInventario'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimientoInventario'
+          description: ''
+  /api/inventario/movimientos/{id}/:
+    get:
+      operationId: inventario_movimientos_retrieve
+      summary: Obtener movimiento
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this movimiento inventario.
+        required: true
+      tags:
+      - Inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimientoInventario'
+          description: ''
+    put:
+      operationId: inventario_movimientos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this movimiento inventario.
+        required: true
+      tags:
+      - inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovimientoInventario'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MovimientoInventario'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MovimientoInventario'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimientoInventario'
+          description: ''
+    patch:
+      operationId: inventario_movimientos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this movimiento inventario.
+        required: true
+      tags:
+      - inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMovimientoInventario'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMovimientoInventario'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMovimientoInventario'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimientoInventario'
+          description: ''
+    delete:
+      operationId: inventario_movimientos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this movimiento inventario.
+        required: true
+      tags:
+      - inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/ordenes/:
+    get:
+      operationId: ordenes_list
+      description: Retorna el listado de órdenes con filtros por estado, técnico y
+        equipo.
+      summary: Listar órdenes de trabajo
+      parameters:
+      - in: query
+        name: equipo_id
+        schema:
+          type: integer
+        description: Filtrar por equipo
+      - in: query
+        name: estado
+        schema:
+          type: string
+        description: Filtrar por estado de la orden
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: tecnico_id
+        schema:
+          type: integer
+        description: Filtrar por técnico asignado
+      tags:
+      - Órdenes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdenTrabajo'
+          description: ''
+    post:
+      operationId: ordenes_create
+      description: Registra una nueva orden y genera trazabilidad inicial en historial.
+      summary: Crear orden de trabajo
+      tags:
+      - Órdenes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrdenTrabajo'
+            examples:
+              CrearOrden-Request:
+                value:
+                  equipo: 1
+                  tecnico_asignado: 2
+                  descripcion_falla: No enciende
+                  diagnostico: ''
+                  solucion: ''
+                  costo_estimado: '50000.00'
+                  costo_final: '0.00'
+                  estado: INGRESADO
+                summary: Crear orden - request
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrdenTrabajo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrdenTrabajo'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenTrabajo'
+          description: ''
+  /api/ordenes/{id}/:
+    get:
+      operationId: ordenes_retrieve
+      description: Detalle de la orden con historial.
+      summary: Obtener orden
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this orden trabajo.
+        required: true
+      tags:
+      - Órdenes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenTrabajo'
+          description: ''
+    put:
+      operationId: ordenes_update
+      description: Actualiza completamente una orden.
+      summary: Actualizar orden
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this orden trabajo.
+        required: true
+      tags:
+      - Órdenes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrdenTrabajo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrdenTrabajo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrdenTrabajo'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenTrabajo'
+          description: ''
+    patch:
+      operationId: ordenes_partial_update
+      description: Actualiza una orden. Si cambia el estado, se registra en historial
+        automáticamente.
+      summary: Actualizar orden (parcial)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this orden trabajo.
+        required: true
+      tags:
+      - Órdenes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrdenTrabajo'
+            examples:
+              CambioDeEstado:
+                value:
+                  estado: DIAGNOSTICO
+                  diagnostico: Se detecta falla de fuente
+                summary: Cambio de estado
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrdenTrabajo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrdenTrabajo'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenTrabajo'
+          description: ''
+    delete:
+      operationId: ordenes_destroy
+      description: Elimina una orden (solo admin).
+      summary: Eliminar orden
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this orden trabajo.
+        required: true
+      tags:
+      - Órdenes
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/reportes/consumo-repuestos/:
+    get:
+      operationId: reportes_consumo_repuestos_list
+      description: Retorna cantidad consumida y costo total por repuesto en consumos
+        de órdenes.
+      summary: Reporte de consumo de repuestos
+      parameters:
+      - in: query
+        name: fecha_fin
+        schema:
+          type: string
+        description: Formato YYYY-MM-DD
+      - in: query
+        name: fecha_inicio
+        schema:
+          type: string
+        description: Formato YYYY-MM-DD
+      tags:
+      - Reportes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReporteConsumoRepuestos'
+          description: ''
+  /api/reportes/ordenes-por-estado/:
+    get:
+      operationId: reportes_ordenes_por_estado_list
+      description: Retorna conteo de órdenes agrupadas por estado, con filtro opcional
+        por rango de fechas.
+      summary: Reporte de órdenes por estado
+      parameters:
+      - in: query
+        name: fecha_fin
+        schema:
+          type: string
+        description: Formato YYYY-MM-DD
+      - in: query
+        name: fecha_inicio
+        schema:
+          type: string
+        description: Formato YYYY-MM-DD
+      tags:
+      - Reportes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReporteOrdenesPorEstado'
+          description: ''
+  /api/reportes/ordenes-por-tecnico/:
+    get:
+      operationId: reportes_ordenes_por_tecnico_list
+      description: Retorna conteo de órdenes agrupadas por técnico asignado, con filtro
+        opcional por rango de fechas.
+      summary: Reporte de órdenes por técnico
+      parameters:
+      - in: query
+        name: fecha_fin
+        schema:
+          type: string
+        description: Formato YYYY-MM-DD
+      - in: query
+        name: fecha_inicio
+        schema:
+          type: string
+        description: Formato YYYY-MM-DD
+      tags:
+      - Reportes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReporteOrdenesPorTecnico'
+          description: ''
+  /api/repuestos/:
+    get:
+      operationId: repuestos_list
+      summary: Listar repuestos
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Repuesto'
+          description: ''
+    post:
+      operationId: repuestos_create
+      summary: Crear repuesto
+      tags:
+      - Inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Repuesto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Repuesto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Repuesto'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repuesto'
+          description: ''
+  /api/repuestos/{id}/:
+    get:
+      operationId: repuestos_retrieve
+      summary: Obtener repuesto
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this repuesto.
+        required: true
+      tags:
+      - Inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repuesto'
+          description: ''
+    put:
+      operationId: repuestos_update
+      summary: Actualizar repuesto
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this repuesto.
+        required: true
+      tags:
+      - Inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Repuesto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Repuesto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Repuesto'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repuesto'
+          description: ''
+    patch:
+      operationId: repuestos_partial_update
+      summary: Actualizar repuesto (parcial)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this repuesto.
+        required: true
+      tags:
+      - Inventario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRepuesto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRepuesto'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRepuesto'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repuesto'
+          description: ''
+    delete:
+      operationId: repuestos_destroy
+      summary: Eliminar repuesto
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this repuesto.
+        required: true
+      tags:
+      - Inventario
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/schema/:
     get:
       operationId: schema_retrieve
@@ -674,6 +1453,45 @@ components:
       - nombres
       - numero_documento
       - telefono
+    ConsumoOrden:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        orden:
+          type: integer
+        repuesto:
+          type: integer
+        repuesto_codigo:
+          type: string
+          readOnly: true
+        cantidad:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+        precio_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        usuario:
+          type: integer
+          readOnly: true
+          nullable: true
+        fecha:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - cantidad
+      - fecha
+      - id
+      - orden
+      - precio_unitario
+      - repuesto
+      - repuesto_codigo
+      - usuario
     Equipo:
       type: object
       properties:
@@ -707,7 +1525,7 @@ components:
         problema_reportado:
           type: string
         estado_actual:
-          $ref: '#/components/schemas/EstadoActualEnum'
+          $ref: '#/components/schemas/EstadoEnum'
         fecha_ingreso:
           type: string
           format: date-time
@@ -726,7 +1544,7 @@ components:
       - marca
       - problema_reportado
       - tipo_equipo
-    EstadoActualEnum:
+    EstadoEnum:
       enum:
       - INGRESADO
       - DIAGNOSTICO
@@ -740,6 +1558,153 @@ components:
         * `REPARACION` - En reparación
         * `LISTO` - Listo
         * `ENTREGADO` - Entregado
+    HistorialOrden:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        estado_anterior:
+          type: string
+          readOnly: true
+        estado_nuevo:
+          allOf:
+          - $ref: '#/components/schemas/EstadoEnum'
+          readOnly: true
+        comentario:
+          type: string
+          readOnly: true
+        usuario:
+          type: integer
+          readOnly: true
+          nullable: true
+        usuario_username:
+          type: string
+          readOnly: true
+        fecha:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - comentario
+      - estado_anterior
+      - estado_nuevo
+      - fecha
+      - id
+      - usuario
+      - usuario_username
+    MovimientoInventario:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        repuesto:
+          type: integer
+        repuesto_codigo:
+          type: string
+          readOnly: true
+        tipo:
+          $ref: '#/components/schemas/TipoEnum'
+        cantidad:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+        motivo:
+          type: string
+          maxLength: 255
+        orden_referencia:
+          type: integer
+          nullable: true
+        usuario:
+          type: integer
+          readOnly: true
+          nullable: true
+        fecha:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - cantidad
+      - fecha
+      - id
+      - repuesto
+      - repuesto_codigo
+      - tipo
+      - usuario
+    OrdenTrabajo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        equipo:
+          type: integer
+        equipo_marca:
+          type: string
+          readOnly: true
+        equipo_modelo:
+          type: string
+          readOnly: true
+        cliente_nombre:
+          type: string
+          readOnly: true
+        cliente_apellido:
+          type: string
+          readOnly: true
+        recepcionista:
+          type: integer
+          nullable: true
+        tecnico_asignado:
+          type: integer
+          nullable: true
+        descripcion_falla:
+          type: string
+        diagnostico:
+          type: string
+        solucion:
+          type: string
+        costo_estimado:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        costo_final:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        estado:
+          $ref: '#/components/schemas/EstadoEnum'
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_entrega:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        historial:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistorialOrden'
+          readOnly: true
+      required:
+      - cliente_apellido
+      - cliente_nombre
+      - descripcion_falla
+      - equipo
+      - equipo_marca
+      - equipo_modelo
+      - fecha_actualizacion
+      - fecha_creacion
+      - fecha_entrega
+      - historial
+      - id
     PatchedCliente:
       type: object
       properties:
@@ -778,6 +1743,36 @@ components:
           type: string
           format: date-time
           readOnly: true
+    PatchedConsumoOrden:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        orden:
+          type: integer
+        repuesto:
+          type: integer
+        repuesto_codigo:
+          type: string
+          readOnly: true
+        cantidad:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+        precio_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        usuario:
+          type: integer
+          readOnly: true
+          nullable: true
+        fecha:
+          type: string
+          format: date-time
+          readOnly: true
     PatchedEquipo:
       type: object
       properties:
@@ -811,7 +1806,7 @@ components:
         problema_reportado:
           type: string
         estado_actual:
-          $ref: '#/components/schemas/EstadoActualEnum'
+          $ref: '#/components/schemas/EstadoEnum'
         fecha_ingreso:
           type: string
           format: date-time
@@ -820,6 +1815,226 @@ components:
           type: string
           format: date-time
           readOnly: true
+    PatchedMovimientoInventario:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        repuesto:
+          type: integer
+        repuesto_codigo:
+          type: string
+          readOnly: true
+        tipo:
+          $ref: '#/components/schemas/TipoEnum'
+        cantidad:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+        motivo:
+          type: string
+          maxLength: 255
+        orden_referencia:
+          type: integer
+          nullable: true
+        usuario:
+          type: integer
+          readOnly: true
+          nullable: true
+        fecha:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedOrdenTrabajo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        equipo:
+          type: integer
+        equipo_marca:
+          type: string
+          readOnly: true
+        equipo_modelo:
+          type: string
+          readOnly: true
+        cliente_nombre:
+          type: string
+          readOnly: true
+        cliente_apellido:
+          type: string
+          readOnly: true
+        recepcionista:
+          type: integer
+          nullable: true
+        tecnico_asignado:
+          type: integer
+          nullable: true
+        descripcion_falla:
+          type: string
+        diagnostico:
+          type: string
+        solucion:
+          type: string
+        costo_estimado:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        costo_final:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        estado:
+          $ref: '#/components/schemas/EstadoEnum'
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_entrega:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        historial:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistorialOrden'
+          readOnly: true
+    PatchedRepuesto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 120
+        codigo:
+          type: string
+          maxLength: 40
+        descripcion:
+          type: string
+        stock_actual:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+        stock_minimo:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+        costo_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        activo:
+          type: boolean
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+    ReporteConsumoRepuestos:
+      type: object
+      properties:
+        repuesto:
+          type: integer
+        repuesto__codigo:
+          type: string
+        repuesto__nombre:
+          type: string
+        total_cantidad:
+          type: integer
+        total_costo:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,2})?$
+      required:
+      - repuesto
+      - repuesto__codigo
+      - repuesto__nombre
+      - total_cantidad
+      - total_costo
+    ReporteOrdenesPorEstado:
+      type: object
+      properties:
+        estado:
+          type: string
+        total:
+          type: integer
+      required:
+      - estado
+      - total
+    ReporteOrdenesPorTecnico:
+      type: object
+      properties:
+        tecnico_asignado:
+          type: integer
+          nullable: true
+        tecnico_asignado__username:
+          type: string
+          nullable: true
+        total:
+          type: integer
+      required:
+      - tecnico_asignado
+      - tecnico_asignado__username
+      - total
+    Repuesto:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombre:
+          type: string
+          maxLength: 120
+        codigo:
+          type: string
+          maxLength: 40
+        descripcion:
+          type: string
+        stock_actual:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+        stock_minimo:
+          type: integer
+          maximum: 4294967295
+          minimum: 0
+          format: int64
+        costo_unitario:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        activo:
+          type: boolean
+        fecha_creacion:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - codigo
+      - fecha_actualizacion
+      - fecha_creacion
+      - id
+      - nombre
     TipoDocumentoEnum:
       enum:
       - CC
@@ -832,6 +2047,16 @@ components:
         * `CE` - Cédula de extranjería
         * `NIT` - NIT
         * `OTRO` - Otro
+    TipoEnum:
+      enum:
+      - ENTRADA
+      - SALIDA
+      - AJUSTE
+      type: string
+      description: |-
+        * `ENTRADA` - Entrada
+        * `SALIDA` - Salida
+        * `AJUSTE` - Ajuste
     TipoEquipoEnum:
       enum:
       - PORTATIL
@@ -890,3 +2115,9 @@ tags:
   description: Gestión CRUD de clientes.
 - name: Equipos
   description: Gestión CRUD de equipos y filtros.
+- name: Inventario
+  description: Repuestos, movimientos y consumos por orden.
+- name: Órdenes
+  description: Gestión de órdenes de trabajo y trazabilidad.
+- name: Reportes
+  description: Reportes agregados operativos y de consumo.

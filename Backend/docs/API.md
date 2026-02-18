@@ -196,6 +196,161 @@ GET /api/equipos/?estado=INGRESADO&tipo_equipo=PORTATIL
 
 ---
 
+## Módulo Órdenes
+
+### Endpoint base
+
+- `/api/ordenes/`
+
+### Permisos por rol
+
+- `Administrador`: CRUD completo
+- `Recepción`: `list`, `retrieve`, `create`, `update`, `partial_update`
+- `Técnico`: `list`, `retrieve`, `update`, `partial_update`
+
+### Filtros soportados
+
+- `estado`
+- `tecnico_id`
+- `equipo_id`
+
+Ejemplo:
+
+```http
+GET /api/ordenes/?estado=DIAGNOSTICO&tecnico_id=2
+```
+
+### Trazabilidad
+
+Cada creación de orden y cada cambio de estado genera automáticamente un registro en el historial de la orden.
+
+### Operaciones principales
+
+#### Crear orden
+
+- Método: `POST`
+- URL: `/api/ordenes/`
+- Body (JSON):
+
+```json
+{
+  "equipo": 1,
+  "tecnico_asignado": 2,
+  "descripcion_falla": "No enciende",
+  "diagnostico": "",
+  "solucion": "",
+  "costo_estimado": "50000.00",
+  "costo_final": "0.00",
+  "estado": "INGRESADO"
+}
+```
+
+#### Actualizar estado de orden
+
+- Método: `PATCH`
+- URL: `/api/ordenes/{id}/`
+- Body ejemplo:
+
+```json
+{
+  "estado": "DIAGNOSTICO",
+  "diagnostico": "Se detecta falla de memoria"
+}
+```
+
+#### Ver detalle con historial
+
+- Método: `GET`
+- URL: `/api/ordenes/{id}/`
+
+---
+
+## Módulo Inventario
+
+### Endpoints base
+
+- `/api/repuestos/`
+- `/api/inventario/movimientos/`
+- `/api/inventario/consumos/`
+
+### Permisos por rol
+
+- `Administrador`: CRUD completo
+- `Recepción`: `list`, `retrieve`, `create`, `update`, `partial_update`
+- `Técnico`: `list`, `retrieve`
+
+### Integración con órdenes
+
+- Crear un registro en `/api/inventario/consumos/` descuenta stock automáticamente.
+- Cada consumo crea un movimiento tipo `SALIDA` asociado a la orden.
+- Si el stock es insuficiente, la API responde `400`.
+
+### Operaciones principales
+
+#### Crear repuesto
+
+- Método: `POST`
+- URL: `/api/repuestos/`
+
+#### Registrar entrada/salida manual
+
+- Método: `POST`
+- URL: `/api/inventario/movimientos/`
+- Body ejemplo:
+
+```json
+{
+  "repuesto": 1,
+  "tipo": "ENTRADA",
+  "cantidad": 5,
+  "motivo": "Compra proveedor"
+}
+```
+
+#### Registrar consumo en orden
+
+- Método: `POST`
+- URL: `/api/inventario/consumos/`
+- Body ejemplo:
+
+```json
+{
+  "orden": 1,
+  "repuesto": 1,
+  "cantidad": 2,
+  "precio_unitario": "85000.00"
+}
+```
+
+---
+
+## Módulo Reportes
+
+### Endpoints
+
+- `/api/reportes/ordenes-por-estado/`
+- `/api/reportes/ordenes-por-tecnico/`
+- `/api/reportes/consumo-repuestos/`
+
+### Acceso
+
+- `Administrador`, `Recepción` y `Técnico` pueden consultar reportes.
+
+### Filtros comunes
+
+- `fecha_inicio=YYYY-MM-DD`
+- `fecha_fin=YYYY-MM-DD`
+
+### Ejemplos
+
+```http
+GET /api/reportes/ordenes-por-estado/?fecha_inicio=2026-02-01&fecha_fin=2026-02-28
+GET /api/reportes/ordenes-por-tecnico/?fecha_inicio=2026-02-01
+GET /api/reportes/consumo-repuestos/?fecha_fin=2026-02-28
+```
+
+---
+
 ## Datos de prueba
 
 Puedes cargar datos demo con:
@@ -207,5 +362,5 @@ python manage.py seed_demo_data
 ## Pruebas automáticas
 
 ```bash
-python manage.py test clientes equipos --settings=config.settings_test
+python manage.py test clientes equipos ordenes inventario reportes --settings=config.settings_test
 ```
