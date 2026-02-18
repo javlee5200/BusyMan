@@ -101,11 +101,36 @@ GestionTaller/
 
 ---
 
+## 🗄️ Configuración de Base de Datos (MySQL)
+
+1. Inicia MySQL Server.
+2. Ejecuta el script SQL inicial para crear base de datos, usuario y permisos:
+  - Archivo: `database/init_db.sql`
+  - Puedes ejecutarlo desde MySQL Workbench o por consola.
+3. Verifica (o crea) el archivo `.env` en la raíz del backend con estas variables:
+
+```env
+DJANGO_SECRET_KEY=tu_clave_secreta
+DJANGO_DEBUG=True
+
+DB_NAME=gestion_taller
+DB_USER=taller_user
+DB_PASSWORD=tu_password
+DB_HOST=localhost
+DB_PORT=3306
+```
+
+---
+
 ## 🚀 Instalación Rápida
 
 ```bash
 python -m venv venv
-venv\Scripts\activate
+# PowerShell (Windows)
+.\venv\Scripts\Activate.ps1
+# Bash (Git Bash/WSL/Linux/macOS)
+# source venv/Scripts/activate   # Git Bash en Windows
+# source venv/bin/activate       # WSL/Linux/macOS
 pip install -r requirements.txt
 ```
 
@@ -114,10 +139,126 @@ pip install -r requirements.txt
 ## ▶️ Ejecución
 
 ```bash
+# Aplica migraciones en la base de datos configurada en .env
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
 ```
+
+Al ejecutar `python manage.py migrate`, el sistema crea/actualiza automáticamente los grupos:
+- `Administrador`
+- `Recepción`
+- `Técnico`
+
+Permisos base por rol:
+
+| Rol | Permisos |
+|-----|----------|
+| Administrador | Todos los permisos del sistema |
+| Recepción | `view/add/change` en `clientes`, `equipos`, `ordenes`; `view` en `inventario`, `reportes` |
+| Técnico | `view/change` en `equipos`, `ordenes`; `view` en `clientes`, `inventario`, `reportes` |
+
+Luego puedes asignar usuarios a esos grupos desde `/admin` en **Users** o **Groups**.
+
+### Datos de prueba (opcional)
+
+Para cargar 5 clientes y 5 equipos de ejemplo:
+
+```bash
+python manage.py seed_demo_data
+```
+
+Este comando es idempotente: si ya existen registros con el mismo documento/serie, no los duplica.
+
+### API Clientes (Día 3)
+
+Endpoint base:
+
+```bash
+/api/clientes/
+```
+
+Reglas de acceso por rol:
+- `Administrador`: CRUD completo.
+- `Recepción`: `list/retrieve/create/update/partial_update`.
+- `Técnico`: solo `list/retrieve`.
+
+> Nota: la API requiere usuario autenticado.
+
+### API Equipos (Día 4)
+
+Endpoint base:
+
+```bash
+/api/equipos/
+```
+
+Filtros disponibles (query params):
+- `cliente_id`
+- `estado`
+- `tipo_equipo`
+- `numero_serie`
+
+Reglas de acceso por rol:
+- `Administrador`: CRUD completo.
+- `Recepción`: `list/retrieve/create/update/partial_update`.
+- `Técnico`: `list/retrieve/update/partial_update`.
+
+> Nota: la API requiere usuario autenticado.
+
+### Autenticación JWT (Día 5)
+
+Obtener tokens:
+
+```bash
+POST /api/auth/token/
+```
+
+Body JSON:
+
+```json
+{
+  "username": "tu_usuario",
+  "password": "tu_password"
+}
+```
+
+Renovar access token:
+
+```bash
+POST /api/auth/token/refresh/
+```
+
+Body JSON:
+
+```json
+{
+  "refresh": "<refresh_token>"
+}
+```
+
+Usar token en endpoints protegidos:
+
+```bash
+Authorization: Bearer <access_token>
+```
+
+### Pruebas automáticas API (Día 6)
+
+Ejecutar pruebas de `clientes` y `equipos`:
+
+```bash
+python manage.py test clientes equipos --settings=config.settings_test
+```
+
+> Se usa `config.settings_test` (SQLite) para evitar dependencias de permisos de creación de base de datos de prueba en MySQL.
+
+### Documentación API y Postman (Día 7)
+
+- Documentación detallada de endpoints:
+  - `docs/API.md`
+- Colección Postman lista para importar:
+  - `docs/postman/BusyMan_API.postman_collection.json`
 
 ---
 
