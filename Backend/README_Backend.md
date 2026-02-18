@@ -267,6 +267,21 @@ Reglas de acceso por rol:
 - `Recepción`: consulta permitida.
 - `Técnico`: consulta permitida.
 
+### API Usuarios (Día 12)
+
+Endpoint para combos de técnicos en frontend:
+
+```bash
+/api/usuarios/tecnicos/
+```
+
+Reglas de acceso por rol:
+- `Administrador`: consulta permitida.
+- `Recepción`: consulta permitida.
+- `Técnico`: consulta permitida.
+
+Respuesta orientada a select/combo (`id`, `value`, `label`, `username`, `first_name`, `last_name`).
+
 ### Autenticación JWT (Día 5)
 
 Obtener tokens:

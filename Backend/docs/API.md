@@ -56,6 +56,48 @@ Authorization: Bearer <access_token>
 
 ---
 
+## Módulo Usuarios
+
+### Endpoint para combo de técnicos
+
+- Método: `GET`
+- URL: `/api/usuarios/tecnicos/`
+
+### Permisos por rol
+
+- `Administrador`: permitido
+- `Recepción`: permitido
+- `Técnico`: permitido
+
+### Respuesta esperada (`200`)
+
+```json
+[
+  {
+    "id": 2,
+    "username": "tec_orden",
+    "first_name": "Ana",
+    "last_name": "Ruiz",
+    "value": 2,
+    "label": "Ana Ruiz"
+  },
+  {
+    "id": 3,
+    "username": "tec_soporte",
+    "first_name": "",
+    "last_name": "",
+    "value": 3,
+    "label": "tec_soporte"
+  }
+]
+```
+
+Notas:
+- Solo retorna usuarios activos (`is_active=true`) del grupo `Técnico`.
+- Diseñado para poblar selects/combos en frontend.
+
+---
+
 ## Módulo Clientes
 
 ### Endpoint base

@@ -1405,6 +1405,25 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/usuarios/tecnicos/:
+    get:
+      operationId: usuarios_tecnicos_list
+      description: Retorna usuarios activos del grupo Técnico con datos mínimos para
+        selects en frontend.
+      summary: Listar técnicos para combo
+      tags:
+      - Usuarios
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TecnicoCombo'
+          description: ''
 components:
   schemas:
     Cliente:
@@ -2035,6 +2054,35 @@ components:
       - fecha_creacion
       - id
       - nombre
+    TecnicoCombo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        value:
+          type: integer
+          readOnly: true
+        label:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - label
+      - username
+      - value
     TipoDocumentoEnum:
       enum:
       - CC
