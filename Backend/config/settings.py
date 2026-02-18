@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     "rest_framework",
+    "drf_spectacular",
 
     "usuarios",
     "clientes",
@@ -124,6 +125,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 
@@ -131,6 +133,18 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "BusyMan API",
+    "DESCRIPTION": "Documentación OpenAPI del backend de gestión de taller.",
+    "VERSION": "1.0.0",
+    "TAGS": [
+        {"name": "Auth", "description": "Autenticación y renovación de tokens JWT."},
+        {"name": "Clientes", "description": "Gestión CRUD de clientes."},
+        {"name": "Equipos", "description": "Gestión CRUD de equipos y filtros."},
+    ],
 }
 
 

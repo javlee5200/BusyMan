@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from usuarios.auth_views import BusyManTokenObtainPairView, BusyManTokenRefreshView
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -26,8 +27,11 @@ urlpatterns = [
     # tus urls...
     path("", RedirectView.as_view(url="/admin/", permanent=False), name="home"),
     path("admin/", admin.site.urls),
-    path("api/auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
+    path("api/docs/swagger/", SpectacularSwaggerView.as_view(url_name="api-schema"), name="swagger-ui"),
+    path("api/docs/redoc/", SpectacularRedocView.as_view(url_name="api-schema"), name="redoc"),
+    path("api/auth/token/", BusyManTokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/auth/token/refresh/", BusyManTokenRefreshView.as_view(), name="token_refresh"),
     path("api/", include("clientes.urls")),
     path("api/", include("equipos.urls")),
 ]

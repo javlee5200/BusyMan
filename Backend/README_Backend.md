@@ -260,6 +260,15 @@ python manage.py test clientes equipos --settings=config.settings_test
 - Colección Postman lista para importar:
   - `docs/postman/BusyMan_API.postman_collection.json`
 
+### OpenAPI / Swagger (Día 8)
+
+- Esquema OpenAPI (JSON):
+  - `/api/schema/`
+- UI Swagger:
+  - `/api/docs/swagger/`
+- UI ReDoc:
+  - `/api/docs/redoc/`
+
 ---
 
 ## ✍️ Autor

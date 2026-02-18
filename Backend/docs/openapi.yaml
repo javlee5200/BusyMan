@@ -1,0 +1,892 @@
+openapi: 3.0.3
+info:
+  title: BusyMan API
+  version: 1.0.0
+  description: Documentación OpenAPI del backend de gestión de taller.
+paths:
+  /api/auth/token/:
+    post:
+      operationId: auth_token_create
+      description: Recibe usuario y contraseña, y retorna tokens access/refresh.
+      summary: Obtener token JWT
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+            examples:
+              LoginJWT-Request:
+                value:
+                  username: recepcion_test
+                  password: Recepcion123!
+                summary: Login JWT - request
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          description: Tokens JWT generados correctamente
+  /api/auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: Recibe refresh token y retorna un nuevo access token.
+      summary: Renovar access token
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+            examples:
+              RefreshJWT-Request:
+                value:
+                  refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                summary: Refresh JWT - request
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          description: Access token renovado correctamente
+  /api/clientes/:
+    get:
+      operationId: clientes_list
+      description: Retorna el listado de clientes registrados.
+      summary: Listar clientes
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Clientes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cliente'
+          description: ''
+    post:
+      operationId: clientes_create
+      description: Crea un nuevo cliente.
+      summary: Crear cliente
+      tags:
+      - Clientes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+            examples:
+              CrearCliente-Request:
+                value:
+                  nombres: Juan
+                  apellidos: Pérez
+                  tipo_documento: CC
+                  numero_documento: '123456789'
+                  telefono: '3001234567'
+                  email: juan.perez@example.com
+                  direccion: Calle 123
+                  activo: true
+                summary: Crear cliente - request
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+              examples:
+                CrearCliente-Response:
+                  value:
+                    id: 1
+                    nombres: Juan
+                    apellidos: Pérez
+                    tipo_documento: CC
+                    numero_documento: '123456789'
+                    telefono: '3001234567'
+                    email: juan.perez@example.com
+                    direccion: Calle 123
+                    activo: true
+                    fecha_registro: '2026-02-18T10:00:00Z'
+                    fecha_actualizacion: '2026-02-18T10:00:00Z'
+                  summary: Crear cliente - response
+          description: ''
+  /api/clientes/{id}/:
+    get:
+      operationId: clientes_retrieve
+      description: Retorna el detalle de un cliente por ID.
+      summary: Obtener cliente
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cliente.
+        required: true
+      tags:
+      - Clientes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+    put:
+      operationId: clientes_update
+      description: Actualiza completamente un cliente existente.
+      summary: Actualizar cliente
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cliente.
+        required: true
+      tags:
+      - Clientes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Cliente'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+    patch:
+      operationId: clientes_partial_update
+      description: Actualiza parcialmente un cliente existente.
+      summary: Actualizar cliente (parcial)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cliente.
+        required: true
+      tags:
+      - Clientes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCliente'
+            examples:
+              ActualizarCliente-Request:
+                value:
+                  telefono: '3015550000'
+                  direccion: 'Carrera 45 #10-20'
+                summary: Actualizar cliente - request
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCliente'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCliente'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+    delete:
+      operationId: clientes_destroy
+      description: Elimina un cliente por ID (según permisos del rol).
+      summary: Eliminar cliente
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this cliente.
+        required: true
+      tags:
+      - Clientes
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/equipos/:
+    get:
+      operationId: equipos_list
+      description: Retorna el listado de equipos. Permite filtros por query params.
+      summary: Listar equipos
+      parameters:
+      - in: query
+        name: cliente_id
+        schema:
+          type: integer
+        description: Filtrar por ID de cliente
+      - in: query
+        name: estado
+        schema:
+          type: string
+        description: Filtrar por estado actual
+      - in: query
+        name: numero_serie
+        schema:
+          type: string
+        description: Filtrar por coincidencia en número de serie
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: tipo_equipo
+        schema:
+          type: string
+        description: Filtrar por tipo de equipo
+      tags:
+      - Equipos
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Equipo'
+          description: ''
+    post:
+      operationId: equipos_create
+      description: Registra un nuevo equipo asociado a un cliente.
+      summary: Crear equipo
+      tags:
+      - Equipos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Equipo'
+            examples:
+              CrearEquipo-Request:
+                value:
+                  cliente: 1
+                  tipo_equipo: PORTATIL
+                  marca: Lenovo
+                  modelo: ThinkPad E14
+                  numero_serie: SN-001-BM
+                  accesorios_recibidos: Cargador
+                  estado_fisico: Buen estado
+                  problema_reportado: No enciende
+                  estado_actual: INGRESADO
+                summary: Crear equipo - request
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Equipo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Equipo'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+              examples:
+                CrearEquipo-Response:
+                  value:
+                    id: 1
+                    cliente: 1
+                    cliente_nombre: Juan
+                    cliente_apellido: Pérez
+                    tipo_equipo: PORTATIL
+                    marca: Lenovo
+                    modelo: ThinkPad E14
+                    numero_serie: SN-001-BM
+                    accesorios_recibidos: Cargador
+                    estado_fisico: Buen estado
+                    problema_reportado: No enciende
+                    estado_actual: INGRESADO
+                    fecha_ingreso: '2026-02-18T10:15:00Z'
+                    fecha_actualizacion: '2026-02-18T10:15:00Z'
+                  summary: Crear equipo - response
+          description: ''
+  /api/equipos/{id}/:
+    get:
+      operationId: equipos_retrieve
+      description: Retorna el detalle de un equipo por ID.
+      summary: Obtener equipo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this equipo.
+        required: true
+      tags:
+      - Equipos
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+          description: ''
+    put:
+      operationId: equipos_update
+      description: Actualiza completamente un equipo existente.
+      summary: Actualizar equipo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this equipo.
+        required: true
+      tags:
+      - Equipos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Equipo'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Equipo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Equipo'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+          description: ''
+    patch:
+      operationId: equipos_partial_update
+      description: Actualiza parcialmente un equipo existente.
+      summary: Actualizar equipo (parcial)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this equipo.
+        required: true
+      tags:
+      - Equipos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEquipo'
+            examples:
+              ActualizarEquipo-Request:
+                value:
+                  estado_actual: DIAGNOSTICO
+                summary: Actualizar equipo - request
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEquipo'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEquipo'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipo'
+          description: ''
+    delete:
+      operationId: equipos_destroy
+      description: Elimina un equipo por ID (según permisos del rol).
+      summary: Eliminar equipo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this equipo.
+        required: true
+      tags:
+      - Equipos
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - ht
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    Cliente:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombres:
+          type: string
+          maxLength: 100
+        apellidos:
+          type: string
+          maxLength: 100
+        tipo_documento:
+          $ref: '#/components/schemas/TipoDocumentoEnum'
+        numero_documento:
+          type: string
+          maxLength: 30
+        telefono:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        direccion:
+          type: string
+          maxLength: 255
+        activo:
+          type: boolean
+        fecha_registro:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - apellidos
+      - fecha_actualizacion
+      - fecha_registro
+      - id
+      - nombres
+      - numero_documento
+      - telefono
+    Equipo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        cliente:
+          type: integer
+        cliente_nombre:
+          type: string
+          readOnly: true
+        cliente_apellido:
+          type: string
+          readOnly: true
+        tipo_equipo:
+          $ref: '#/components/schemas/TipoEquipoEnum'
+        marca:
+          type: string
+          maxLength: 60
+        modelo:
+          type: string
+          maxLength: 80
+        numero_serie:
+          type: string
+          nullable: true
+          maxLength: 100
+        accesorios_recibidos:
+          type: string
+        estado_fisico:
+          type: string
+        problema_reportado:
+          type: string
+        estado_actual:
+          $ref: '#/components/schemas/EstadoActualEnum'
+        fecha_ingreso:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - cliente
+      - cliente_apellido
+      - cliente_nombre
+      - fecha_actualizacion
+      - fecha_ingreso
+      - id
+      - marca
+      - problema_reportado
+      - tipo_equipo
+    EstadoActualEnum:
+      enum:
+      - INGRESADO
+      - DIAGNOSTICO
+      - REPARACION
+      - LISTO
+      - ENTREGADO
+      type: string
+      description: |-
+        * `INGRESADO` - Ingresado
+        * `DIAGNOSTICO` - En diagnóstico
+        * `REPARACION` - En reparación
+        * `LISTO` - Listo
+        * `ENTREGADO` - Entregado
+    PatchedCliente:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nombres:
+          type: string
+          maxLength: 100
+        apellidos:
+          type: string
+          maxLength: 100
+        tipo_documento:
+          $ref: '#/components/schemas/TipoDocumentoEnum'
+        numero_documento:
+          type: string
+          maxLength: 30
+        telefono:
+          type: string
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        direccion:
+          type: string
+          maxLength: 255
+        activo:
+          type: boolean
+        fecha_registro:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedEquipo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        cliente:
+          type: integer
+        cliente_nombre:
+          type: string
+          readOnly: true
+        cliente_apellido:
+          type: string
+          readOnly: true
+        tipo_equipo:
+          $ref: '#/components/schemas/TipoEquipoEnum'
+        marca:
+          type: string
+          maxLength: 60
+        modelo:
+          type: string
+          maxLength: 80
+        numero_serie:
+          type: string
+          nullable: true
+          maxLength: 100
+        accesorios_recibidos:
+          type: string
+        estado_fisico:
+          type: string
+        problema_reportado:
+          type: string
+        estado_actual:
+          $ref: '#/components/schemas/EstadoActualEnum'
+        fecha_ingreso:
+          type: string
+          format: date-time
+          readOnly: true
+        fecha_actualizacion:
+          type: string
+          format: date-time
+          readOnly: true
+    TipoDocumentoEnum:
+      enum:
+      - CC
+      - CE
+      - NIT
+      - OTRO
+      type: string
+      description: |-
+        * `CC` - Cédula de ciudadanía
+        * `CE` - Cédula de extranjería
+        * `NIT` - NIT
+        * `OTRO` - Otro
+    TipoEquipoEnum:
+      enum:
+      - PORTATIL
+      - TORRE
+      - ALL_IN_ONE
+      - IMPRESORA
+      - OTRO
+      type: string
+      description: |-
+        * `PORTATIL` - Portátil
+        * `TORRE` - Torre
+        * `ALL_IN_ONE` - All in one
+        * `IMPRESORA` - Impresora
+        * `OTRO` - Otro
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: Auth
+  description: Autenticación y renovación de tokens JWT.
+- name: Clientes
+  description: Gestión CRUD de clientes.
+- name: Equipos
+  description: Gestión CRUD de equipos y filtros.
