@@ -45,6 +45,38 @@ function ReportesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const resumen = {
+    totalOrdenes: estadoData.reduce((acc, item) => acc + Number(item.total || 0), 0),
+    totalTecnicosActivos: tecnicoData.filter((item) => item.tecnico_asignado).length,
+    totalConsumoCantidad: consumoData.reduce((acc, item) => acc + Number(item.total_cantidad || 0), 0),
+    totalConsumoCosto: consumoData.reduce((acc, item) => acc + Number(item.total_costo || 0), 0),
+  };
+
+  const tecnicoTop = tecnicoData.reduce(
+    (max, item) => (Number(item.total || 0) > Number(max?.total || 0) ? item : max),
+    null,
+  );
+
+  const estadoTop = estadoData.reduce(
+    (max, item) => (Number(item.total || 0) > Number(max?.total || 0) ? item : max),
+    null,
+  );
+
+  const repuestoTop = consumoData.reduce(
+    (max, item) =>
+      Number(item.total_cantidad || 0) > Number(max?.total_cantidad || 0) ? item : max,
+    null,
+  );
+
+  function formatCurrency(value) {
+    const amount = Number(value || 0);
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
+
   async function loadAllReports(activeFilters = filters) {
     setLoading(true);
     setError('');
@@ -201,6 +233,71 @@ function ReportesPage() {
       </div>
 
       {error && <p className="error-message">{error}</p>}
+
+      {!loading && (
+        <div className="kpi-grid">
+          <article className="card kpi-card">
+            <span>Órdenes en período</span>
+            <strong>{resumen.totalOrdenes}</strong>
+          </article>
+          <article className="card kpi-card">
+            <span>Técnicos con carga</span>
+            <strong>{resumen.totalTecnicosActivos}</strong>
+          </article>
+          <article className="card kpi-card">
+            <span>Consumos (cantidad)</span>
+            <strong>{resumen.totalConsumoCantidad}</strong>
+          </article>
+          <article className="card kpi-card">
+            <span>Costo consumos</span>
+            <strong>{formatCurrency(resumen.totalConsumoCosto)}</strong>
+          </article>
+        </div>
+      )}
+
+      {!loading && (
+        <div className="dashboard-grid-2">
+          <div className="card">
+            <h2>Highlights</h2>
+            <ul className="highlights-list">
+              <li>
+                Estado dominante:{' '}
+                <strong>
+                  {estadoTop
+                    ? `${getLabelByValue(ESTADO_ORDEN_OPTIONS, estadoTop.estado, estadoTop.estado)} (${estadoTop.total})`
+                    : 'Sin datos'}
+                </strong>
+              </li>
+              <li>
+                Técnico con mayor carga:{' '}
+                <strong>
+                  {tecnicoTop
+                    ? `${tecnicoTop.tecnico_asignado__username || 'Sin asignar'} (${tecnicoTop.total})`
+                    : 'Sin datos'}
+                </strong>
+              </li>
+              <li>
+                Repuesto más consumido:{' '}
+                <strong>
+                  {repuestoTop
+                    ? `${repuestoTop.repuesto__codigo} (${repuestoTop.total_cantidad})`
+                    : 'Sin datos'}
+                </strong>
+              </li>
+            </ul>
+          </div>
+
+          <div className="card">
+            <h2>Período analizado</h2>
+            <p>
+              Inicio: <strong>{filters.fecha_inicio || 'Sin límite'}</strong>
+            </p>
+            <p>
+              Fin: <strong>{filters.fecha_fin || 'Sin límite'}</strong>
+            </p>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="card">
