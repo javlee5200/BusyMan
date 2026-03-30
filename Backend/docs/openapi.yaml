@@ -2086,14 +2086,14 @@ components:
     TipoDocumentoEnum:
       enum:
       - CC
-      - CE
-      - NIT
+      - RUC
+      - PAS
       - OTRO
       type: string
       description: |-
         * `CC` - Cédula de ciudadanía
-        * `CE` - Cédula de extranjería
-        * `NIT` - NIT
+        * `RUC` - RUC
+        * `PAS` - Pasaporte
         * `OTRO` - Otro
     TipoEnum:
       enum:

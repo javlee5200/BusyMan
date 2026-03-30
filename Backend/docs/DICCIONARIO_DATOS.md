@@ -62,7 +62,7 @@ Descripción: almacena la información principal de los clientes del taller.
 | fecha_registro | DateTimeField | No | Auto registro | Fecha y hora de creación |
 | fecha_actualizacion | DateTimeField | No | Auto actualización | Fecha y hora de modificación |
 
-Dominio de tipo_documento: CC, CE, NIT, OTRO.
+Dominio de tipo_documento: CC, RUC, PAS, OTRO.
 
 ### 5.2 Tabla: equipos_equipo
 
@@ -223,8 +223,8 @@ Descripción: registra el consumo de repuestos asociado a una orden de trabajo.
 ### 8.4 Tipos de documento del cliente
 
 - CC
-- CE
-- NIT
+- RUC
+- PAS
 - OTRO
 
 ## 9. Conclusión técnica

@@ -16,8 +16,8 @@ export const TIPO_EQUIPO_OPTIONS = [
 
 export const TIPO_DOCUMENTO_OPTIONS = [
   { value: 'CC', label: 'CC' },
-  { value: 'CE', label: 'CE' },
-  { value: 'NIT', label: 'NIT' },
+  { value: 'RUC', label: 'RUC' },
+  { value: 'PAS', label: 'PAS' },
   { value: 'OTRO', label: 'Otro' },
 ];
 

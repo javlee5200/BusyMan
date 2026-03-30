@@ -4,8 +4,8 @@ from django.db import models
 class Cliente(models.Model):
 	TIPO_DOCUMENTO_CHOICES = [
 		("CC", "Cédula de ciudadanía"),
-		("CE", "Cédula de extranjería"),
-		("NIT", "NIT"),
+		("RUC", "RUC"),
+		("PAS", "Pasaporte"),
 		("OTRO", "Otro"),
 	]
 
